@@ -24,15 +24,16 @@ def article_switch_vote(redis, user, from_article, to_article)
   ## "single transaction"
   from_article_id = from_article.split(":")[-1]
   to_article_id = to_article.split(":")[-1]
-  if redis.sadd("voted:" + to_article_id, user) && redis.srem("voted:" + from_article_id, user)
-    ## inc score of new article in score zset
-    ## decr score of old article in score zset
+  if redis.sadd("voted:" + to_article_id, user)
+    # puts "exec add"
+    
     redis.zincrby("score:", VOTE_SCORE, to_article)
-    redis.zincrby("score:", -VOTE_SCORE, from_article)
-
-    ## incr votes of new article hash
-    ## decr votes of old article hash
     redis.hincrby(to_article, "votes", 1)
+  end
+  if redis.srem("voted:" + from_article_id, user)
+    # puts "exec rem"
+    
+    redis.zincrby("score:", -VOTE_SCORE, from_article)
     redis.hincrby(from_article, "votes", -1)
   end
 end
@@ -51,9 +52,8 @@ article_switch_vote(redis, "user:2", "article:8", "article:1")
 # article = redis.?
 # puts redis.?
 
-article = redis.zrangebyscore("score", 10, 20)[0]
+article = redis.zrangebyscore("score:", 10, 20)[0]
 if article
-  article_id = article.split(":")[-1]
-  link = redis.hget("article:" + article_id, "link")
+  link = redis.hget(article, "link")
   puts link
 end
