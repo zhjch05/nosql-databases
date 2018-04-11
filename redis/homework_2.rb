@@ -17,6 +17,17 @@ end
 
 def article_switch_vote(redis, user, from_article, to_article)
   # HOMEWORK 2 Part I
+
+  ## add user to new article voted set
+
+  ## del user from old article voted set
+
+  ## inc score of new article in score zset
+
+  ## decr score of old article in score zset
+
+  ##
+
 end
 
 redis = Redis.new
