@@ -1,4 +1,4 @@
-require 'redis'
+require "redis"
 
 ONE_WEEK_IN_SECONDS = 7 * 86400
 VOTE_SCORE = 432
@@ -6,11 +6,11 @@ VOTE_SCORE = 432
 def article_vote(redis, user, article)
   cutoff = Time.now - ONE_WEEK_IN_SECONDS
 
-  unless Time.at(redis.zscore('time:', article)) < cutoff
-    article_id = article.split(':')[-1]
-    if redis.sadd('voted:' + article_id, user)       ## voted set add user
-      redis.zincrby('score:', VOTE_SCORE, article)   ## score zset incr score
-      redis.hincrby(article, 'votes', 1)             ## article hash incr votes
+  unless Time.at(redis.zscore("time:", article)) < cutoff
+    article_id = article.split(":")[-1]
+    if redis.sadd("voted:" + article_id, user) ## voted set add user
+      redis.zincrby("score:", VOTE_SCORE, article)   ## score zset incr score
+      redis.hincrby(article, "votes", 1)             ## article hash incr votes
     end
   end
 end
@@ -19,15 +19,22 @@ def article_switch_vote(redis, user, from_article, to_article)
   # HOMEWORK 2 Part I
 
   ## add user to new article voted set
-
   ## del user from old article voted set
 
-  ## inc score of new article in score zset
+  ## "single transaction"
+  from_article_id = from_article.split(":")[-1]
+  to_article_id = to_article.split(":")[-1]
+  if redis.sadd("voted:" + to_article_id, user) && redis.srem("voted:" + from_article_id, user)
+    ## inc score of new article in score zset
+    ## decr score of old article in score zset
+    redis.zincrby("score:", VOTE_SCORE, to_article)
+    redis.zincrby("score:", -VOTE_SCORE, from_article)
 
-  ## decr score of old article in score zset
-
-  ## 
-
+    ## incr votes of new article hash
+    ## decr votes of old article hash
+    redis.hincrby(to_article, "votes", 1)
+    redis.hincrby(from_article, "votes", -1)
+  end
 end
 
 redis = Redis.new
@@ -43,3 +50,6 @@ article_switch_vote(redis, "user:2", "article:8", "article:1")
 # HOMEWORK 2 Part II
 # article = redis.?
 # puts redis.?
+
+article = redis.zrange("score", 10, 20)
+puts article
