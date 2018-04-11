@@ -37,7 +37,7 @@ def article_switch_vote(redis, user, from_article, to_article)
   end
 end
 
-redis = Redis.new
+redis = Redis.new(host: "127.0.0.1", port: 6379, db: 0)
 # user:3 up votes article:1
 article_vote(redis, "user:3", "article:1")
 # user:3 up votes article:3
