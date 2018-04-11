@@ -8,9 +8,9 @@ def article_vote(redis, user, article)
 
   unless Time.at(redis.zscore('time:', article)) < cutoff
     article_id = article.split(':')[-1]
-    if redis.sadd('voted:' + article_id, user)
-      redis.zincrby('score:', VOTE_SCORE, article)
-      redis.hincrby(article, 'votes', 1)
+    if redis.sadd('voted:' + article_id, user)       ## voted set add user
+      redis.zincrby('score:', VOTE_SCORE, article)   ## score zset incr score
+      redis.hincrby(article, 'votes', 1)             ## article hash incr votes
     end
   end
 end
@@ -26,7 +26,7 @@ def article_switch_vote(redis, user, from_article, to_article)
 
   ## decr score of old article in score zset
 
-  ##
+  ## 
 
 end
 
