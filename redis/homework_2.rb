@@ -51,5 +51,9 @@ article_switch_vote(redis, "user:2", "article:8", "article:1")
 # article = redis.?
 # puts redis.?
 
-article = redis.zrange("score", 10, 20)
-puts article
+article = redis.zrangebyscore("score", 10, 20)[0]
+if article
+  article_id = article.split(":")[-1]
+  link = redis.hget("article:" + article_id, "link")
+  puts link
+end
