@@ -44,4 +44,4 @@ def setup_data(redis)
   puts "#{votes.size} voting histories loaded into the database as a set."
 end
 
-setup_data(Redis.new(host: "127.0.0.1", port: 6379, db: 0))
+setup_data(Redis.new)
