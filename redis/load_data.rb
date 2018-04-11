@@ -1,5 +1,5 @@
-require 'redis'
-require 'json'
+require "redis"
+require "json"
 
 ARTICLES_FILE = "data/articles.json"
 SCORES_FILE = "data/scores.json"
@@ -36,7 +36,7 @@ def setup_data(redis)
   votes = JSON.load(votes_files)
 
   votes.each do |article, users|
-    article_id = article.split(':')[-1]
+    article_id = article.split(":")[-1]
     users.each do |user|
       redis.sadd("voted:#{article_id}", user)
     end
@@ -44,4 +44,4 @@ def setup_data(redis)
   puts "#{votes.size} voting histories loaded into the database as a set."
 end
 
-setup_data(Redis.new)
+setup_data(Redis.new(host: "127.0.0.1", port: 6379, db: 0))
