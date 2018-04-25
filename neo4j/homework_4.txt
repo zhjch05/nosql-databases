@@ -1,7 +1,111 @@
 // The scenario you have used for your schema is:
-
+// My family
+// Family members, labeled with :Person, and contains such like "loves" "is_parent_of" and since:year property pairs.
 
 // This is an example. Your own commands should *not* be commented out so we can pipe the file into the cypher-shell.
 // If you'd like to test your commands, you can run 'cat homework_4.txt | cypher-shell -u neo4j -p test' from
 // the vagrant box command line. Make sure neo4j is running first.
 // CREATE (a:person { name: 't' });
+
+//reset
+MATCH (n), ()-[r]-() DELETE n,r ;
+
+//create nodes
+CREATE (i:Person {name: 'James'});
+CREATE (m:Person {name: 'Jing'});
+CREATE (f:Person {name: 'Bo'});
+CREATE (gm:Person {name: 'Feng'});
+CREATE (gf:Person {name: 'Hong'});
+CREATE (a1:Person {name: 'Jie'});
+CREATE (a2:Person {name: 'Fang'});
+CREATE (u1:Person {name: 'Wen'});
+CREATE (u2:Person {name: 'Guang'});
+
+//create relationships
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Jing' AND b.name = 'James'
+CREATE (a)-[r:is_parent_of {since:1996}]->(b) //count 1
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Bo' AND b.name = 'James'
+CREATE (a)-[r:is_parent_of {since:1996}]->(b) //count 2 
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Hong' AND b.name = 'Jing'
+CREATE (a)-[r:is_parent_of]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Feng' AND b.name = 'Jing'
+CREATE (a)-[r:is_parent_of]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Jing' AND b.name = 'Jie'
+CREATE (a)-[r:is_sister_of {since:1978}]->(b) //count 3
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Jie' AND b.name = 'Jing'
+CREATE (a)-[r:is_sister_of]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Jie' AND b.name = 'Fang'
+CREATE (a)-[r:is_sister_of]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Fang' AND b.name = 'Jie'
+CREATE (a)-[r:is_sister_of]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Jing' AND b.name = 'Fang'
+CREATE (a)-[r:is_sister_of]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Fang' AND b.name = 'Jing'
+CREATE (a)-[r:is_sister_of]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Jing' AND b.name = 'Bo'
+CREATE (a)-[r:loves]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Bo' AND b.name = 'Jing'
+CREATE (a)-[r:loves]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Hong' AND b.name = 'Feng'
+CREATE (a)-[r:loves]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Feng' AND b.name = 'Hong'
+CREATE (a)-[r:loves]->(b)
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'Wen' AND b.name = 'Guang'
+CREATE (a)-[r:knows {since: 2008}]->(b) //count 4
+RETURN type(r);
+
+MATCH (a:Person),(b:Person)
+WHERE a.name = 'James' AND b.name = 'Jie'
+CREATE (a)-[r:lives_with {since: 2011}]->(b) //count 5
+RETURN type(r);
+
+// query subgraph
+MATCH (a:Person)-[r:loves]->(b:Person)
+WHERE a.name = 'Jing'
+RETURN a.name, b.name, type(r);
+
+MATCH (a:Person)-[r:is_parent_of]->(b:Person)
+RETURN a.name, b.name, type(r);
