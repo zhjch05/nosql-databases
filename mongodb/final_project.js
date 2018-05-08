@@ -168,7 +168,7 @@ MongoClient.connect(url, function(err, client) {
             firstname: "Charlie",
             lastname: "Z",
             passwd_encrypted: "11624f82af04",
-            type: 1, //private
+            type: 0, //public
             username: "charlie03",
             email: "charlie@mail.com",
         },
@@ -184,28 +184,66 @@ MongoClient.connect(url, function(err, client) {
 
 
     //// Action 1: A user signs up for an account
+    let uuid_newuser1 = ObjectID();
+    let uuid_newaccount1 = ObjectID();
+    accounts.insertOne({
+        _id: uuid_newaccount1,
+        uuid_newuser1,
+        firstname: "Hi",
+        lastname: "X",
+        passwd_encrypted: "720b1a82f91c",
+        type: 0, //public (or private)
+        username: "hi01",
+        email: "hi@mail.com",
+    }, function(err, result) {
+        assert.equal(err, null);
+        assert.equal(1, result.result.n);
+        assert.equal(1, result.ops.length);
+        console.log("Inserted 1 documents into the collection");
+    });
+    users.insertOne({
+        _id: uuid_newuser1,
+        account: uuid_newaccount1,
+        publishes: [],
+        following: [],
+        followers: [],
+        likes: [],
+        comments: [],
+        pending_followers: [],
+    }, function(err, result) {
+        assert.equal(err, null);
+        assert.equal(1, result.result.n);
+        assert.equal(1, result.ops.length);
+        console.log("Inserted 1 documents into the collection");
+    });
+
+
+    // Action 2: A user sees all the photos of one particular person they follow
+    //in real world case, from click event we know the id of that person, now we just assume we know, which is the first one from following's list
+    user = users.findOne({_id: uuid_user_1})
+    console.log(user)
+    //users.find({_id: })
+
+    // Action 3: A user comments on another's photo
+
+
+    // Action 4: A user starts following a new person, whether private or not
 
 
 
-    // Action 2: <describe the action here>
+    // A user set her account to private
 
 
-    // Action 3: <describe the action here>
+
+    // Action 6: A user gets an empty list if she attempts to view a non-following private account
 
 
-    // Action 4: <describe the action here>
+
+    // Action 7: A private account accepts a following offer from another user
 
 
-    // Action 5: <describe the action here>
 
-
-    // Action 6: <describe the action here>
-
-
-    // Action 7: <describe the action here>
-
-
-    // Action 8: <describe the action here>
+    // Action 8: A user sees all photo from a set of publishings from another user
 
 
 
